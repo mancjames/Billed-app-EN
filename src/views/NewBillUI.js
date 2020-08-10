@@ -14,32 +14,32 @@ export default () => {
             <div class="row">
                 <div class="col-md-6">
                   <div class="col-half">
-                    <label for="expense-type" class="bold-label">Type de dépense</label>
+                    <label for="expense-type" class="bold-label">Category of expense</label>
                       <select required class="form-control blue-border" data-testid="expense-type">
-                        <option>Transports</option>
-                        <option>Restaurants et bars</option>
-                        <option>Hôtel et logement</option>
-                        <option>Services en ligne</option>
-                        <option>IT et électronique</option>
-                        <option>Equipement et matériel</option>
-                        <option>Fournitures de bureau</option>
+                        <option>Travels</option>
+                        <option>Food</option>
+                        <option>Hostel</option>
+                        <option>Online services</option>
+                        <option>IT products and electronics</option>
+                        <option>Equipment</option>
+                        <option>Furnitures</option>
                       </select>
                   </div>
                   <div class="col-half">
-                    <label for="expense-name" class="bold-label">Nom de la dépense</label>
-                    <input type="text" class="form-control blue-border" data-testid="expense-name" placeholder="Vol Paris Londres" />
+                    <label for="expense-name" class="bold-label">Label of expense</label>
+                    <input type="text" class="form-control blue-border" data-testid="expense-name" placeholder="London-Paris flight" />
                   </div>
                   <div class="col-half">
                     <label for="datepicker" class="bold-label">Date</label>
                     <input required type="date" class="form-control blue-border" data-testid="datepicker" />
                   </div>
                   <div class="col-half">
-                    <label for="amount" class="bold-label">Montant TTC </label>
+                    <label for="amount" class="bold-label">Amount all taxes incl. </label>
                     <input required type="number" class="form-control blue-border input-icon input-icon-right" data-testid="amount" placeholder="348"/>
                   </div>
                   <div class="col-half-row">
                     <div class="flex-col"> 
-                      <label for="vat" class="bold-label">TVA</label>
+                      <label for="vat" class="bold-label">VAT</label>
                       <input type="number" class="form-control blue-border" data-testid="vat" placeholder="70" />
                     </div>
                     <div class="flex-col">
@@ -50,7 +50,7 @@ export default () => {
                 </div>
                 <div class="col-md-6">
                   <div class="col-half">
-                    <label for="commentary" class="bold-label">Commentaire</label>
+                    <label for="commentary" class="bold-label">Comments</label>
                     <textarea class="form-control blue-border" data-testid="commentary" rows="3"></textarea>
                   </div>
                   <div class="col-half">
@@ -62,7 +62,7 @@ export default () => {
             <div class="row">
               <div class="col-md-6">
                 <div class="col-half">
-                  <button type="submit" id='btn-send-bill' class="btn btn-primary">Envoyer</button>
+                  <button type="submit" id='btn-send-bill' class="btn btn-primary">Send</button>
                 </div>
               </div>
             </div>

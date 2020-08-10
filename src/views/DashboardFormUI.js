@@ -38,13 +38,13 @@ export default (bill) => {
           </div>
         </div>
         <div class="col-sm" id="dashboard-form-col2">
-          <label for="commentary" class="bold-label">Commentary</label>
+          <label for="commentary" class="bold-label">Comment</label>
           <div class='textarea-field' style="height: 300px;"> ${bill.commentary} </div>
         </div>
       </div>
       <div class="row">
         <div class="col-sm">
-          <label for="amount" class="bold-label">Amount all included </label>
+          <label for="amount" class="bold-label">Amount all taxes incl. </label>
           <div class='input-field input-flex'>
             <span data-testid="amount-d">${bill.amount}</span>
             <span> ${euroIcon} </span>
@@ -78,12 +78,12 @@ export default (bill) => {
       <div class="row">
        ${bill.status === 'pending' ? (`
         <div class="col-sm">
-          <label for="commentary-admin" class="bold-label">Add a commentary</label>
+          <label for="commentary-admin" class="bold-label">Add a comment</label>
           <textarea id="commentary2" class="form-control blue-border" data-testid="commentary2" rows="5"></textarea>
         </div>
        `) : (`
         <div class="col-sm">
-          <label for="commentary-admin" class="bold-label">Your commentary</label>
+          <label for="commentary-admin" class="bold-label">Your comment</label>
           <div class='input-field'> ${bill.commentAdmin} </div>
         </div>
        `)}
