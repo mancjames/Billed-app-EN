@@ -29,7 +29,7 @@ describe('Given I am connected and I am on some page of the app', () => {
         error
        })
        document.body.innerHTML = html
-       expect(screen.getAllByText('Mes notes de frais')).toBeTruthy()
+       expect(screen.getAllByText('My fees')).toBeTruthy()
     })
   })
   describe('When I navigate to NewBill page', () => {
@@ -42,7 +42,7 @@ describe('Given I am connected and I am on some page of the app', () => {
         error
        })
        document.body.innerHTML = html
-       expect(screen.getAllByText('Envoyer une note de frais')).toBeTruthy()
+       expect(screen.getAllByText('Send a fee')).toBeTruthy()
     })
   })
   describe('When I navigate to Dashboard', () => {
@@ -55,7 +55,7 @@ describe('Given I am connected and I am on some page of the app', () => {
         error
        })
        document.body.innerHTML = html
-       expect(screen.getAllByText('Validations')).toBeTruthy()
+       expect(screen.getAllByText('Confirmation')).toBeTruthy()
     })
   })
   describe('When I navigate to anywhere else other than Login, Bills, NewBill, Dashboard', () => {

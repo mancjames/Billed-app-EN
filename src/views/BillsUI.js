@@ -30,7 +30,7 @@ export default ({ data: bills, loading, error }) => {
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLongTitle">Justificatif</h5>
+            <h5 class="modal-title" id="exampleModalLongTitle">Fee</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -53,18 +53,18 @@ export default ({ data: bills, loading, error }) => {
       ${VerticalLayout(120)}
       <div class='content'>
         <div class='content-header'>
-          <div class='content-title'> Mes notes de frais </div>
-          <button type="button" data-testid='btn-new-bill' class="btn btn-primary">Nouvelle note de frais</button>
+          <div class='content-title'> My fees </div>
+          <button type="button" data-testid='btn-new-bill' class="btn btn-primary">New fee</button>
         </div>
         <div id="data-table">
         <table id="example" class="table table-striped" style="width:100%">
           <thead>
               <tr>
-                <th>Type</th>
-                <th>Nom</th>
+                <th>Category</th>
+                <th>Label</th>
                 <th>Date</th>
-                <th>Montant</th>
-                <th>Statut</th>
+                <th>Amount</th>
+                <th>Status</th>
                 <th>Actions</th>
               </tr>
           </thead>
