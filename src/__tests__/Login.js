@@ -105,7 +105,7 @@ describe("Given that I am a user on login page", () => {
     })  
 
     test("It should renders Bills page", () => {
-      expect(screen.getAllByText('Mes notes de frais')).toBeTruthy()
+      expect(screen.getAllByText('My fees')).toBeTruthy()
     })
 
   })
@@ -136,12 +136,12 @@ describe("Given that I am a user on login page", () => {
       document.body.innerHTML = LoginUI()
 
       const inputEmailUser = screen.getByTestId("admin-email-input")
-      fireEvent.change(inputEmailUser, { target: { value: "pasunemail" } })
-      expect(inputEmailUser.value).toBe("pasunemail")
+      fireEvent.change(inputEmailUser, { target: { value: "notanemail" } })
+      expect(inputEmailUser.value).toBe("notanemail")
           
       const inputPasswordUser = screen.getByTestId("admin-password-input")
-      fireEvent.change(inputPasswordUser, { target: { value: "azerty" } })
-      expect(inputPasswordUser.value).toBe("azerty")
+      fireEvent.change(inputPasswordUser, { target: { value: "qwerty" } })
+      expect(inputPasswordUser.value).toBe("qwerty")
   
       const form = screen.getByTestId("form-admin")
       const handleSubmit = jest.fn(e => e.preventDefault())  
@@ -216,7 +216,7 @@ describe("Given that I am a user on login page", () => {
       })  
 
     test("It should renders HR dashboard page", () => {
-      expect(screen.queryByText('Validations')).toBeTruthy()
+      expect(screen.queryByText('Confirmation')).toBeTruthy()
     })
   
   })
