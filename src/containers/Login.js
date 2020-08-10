@@ -49,6 +49,7 @@ export default class Login {
     document.body.style.backgroundColor="#fff"
   }
 
+  // no need to cover this function by tests
   checkIfUserExists = (user) => {
     if (this.firestore) {
       this.firestore
@@ -68,6 +69,7 @@ export default class Login {
     }
   }
 
+  // no need to cover this function by tests
   createUser = (user) => {
     if (this.firestore) {
       this.firestore

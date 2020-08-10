@@ -27,10 +27,10 @@ export default class {
     $('#modaleFile').modal('show')
   }
 
+  // no need to cover this function by tests
   getBills = () => {
     const userEmail = localStorage.getItem('user') ?
       JSON.parse(localStorage.getItem('user')).email : ""
-    console.log('getBills userEmail', userEmail)
     if (this.firestore) {
       return this.firestore
       .bills()
@@ -43,7 +43,6 @@ export default class {
             status: formatStatus(doc.data().status)
           }))
           .filter(bill => bill.email === userEmail)
-        console.log('bills', bills)
         return bills
       })
       .catch(error => error)

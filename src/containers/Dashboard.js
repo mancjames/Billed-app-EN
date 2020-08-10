@@ -153,6 +153,7 @@ export default class {
 
   }
 
+  // no need to cover this function by tests
   getBillsAllUsers = () => {
     if (this.firestore) {
       return this.firestore
@@ -172,7 +173,7 @@ export default class {
     }
   }
     
-
+  // no need to cover this function by tests
   updateBill = (bill) => {
     if (this.firestore) {
     return this.firestore
