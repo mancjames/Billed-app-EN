@@ -1,10 +1,7 @@
 **How to run the App localy**:
 
 *clone the project*
-<<<<<<< HEAD
-=======
 `$ git clone https://github.com/OpenClassrooms-Student-Center/Billed-app-EN.git`
->>>>>>> 5605fd2b2637571e24a251185b319d246fa800d3
 
 *go to the cloned repo*
 `$ cd Billed-app-EN`
