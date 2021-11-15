@@ -56,7 +56,9 @@ export default class {
             }
           })
           .filter(bill => bill.email === userEmail)
+          const test = bills.sort((d1, d2) => (new Date(d1.date) > new Date(d2.date)) ? 1 : -1)
           console.log('length', bills.length)
+          console.log(test)
         return bills
       })
       .catch(error => error)
