@@ -70,9 +70,9 @@ export default class {
     this.document = document
     this.onNavigate = onNavigate
     this.firestore = firestore
-    $('#arrow-icon1').click((e) => this.handleShowTickets(e, bills, 1))
-    $('#arrow-icon2').click((e) => this.handleShowTickets(e, bills, 2))
-    $('#arrow-icon3').click((e) => this.handleShowTickets(e, bills, 3))
+    $('#arrow-icon1').on('click', (e) => this.handleShowTickets(e, bills, 1))
+    $('#arrow-icon2').on('click', (e) => this.handleShowTickets(e, bills, 2))
+    $('#arrow-icon3').on('click', (e) => this.handleShowTickets(e, bills, 3))
     this.getBillsAllUsers()
     new Logout({ localStorage, onNavigate })
   }
@@ -104,9 +104,9 @@ export default class {
       $('.vertical-navbar').css({ height: '120vh' })
       this.counter ++
     }
-    $('#icon-eye-d').click(this.handleClickIconEye)
-    $('#btn-accept-bill').click((e) => this.handleAcceptSubmit(e, bill))
-    $('#btn-refuse-bill').click((e) => this.handleRefuseSubmit(e, bill))
+    $('#icon-eye-d').on('click', () => (this.handleClickIconEye))
+    $('#btn-accept-bill').on('click', (e) => this.handleAcceptSubmit(e, bill))
+    $('#btn-refuse-bill').on('click', (e) => this.handleRefuseSubmit(e, bill))
   }
 
   handleAcceptSubmit = (e, bill) => {
@@ -143,10 +143,10 @@ export default class {
         .html("")
       this.counter ++
     }
+    //updated below - when opened second arrow was causing event listener to go on twice on already open section causing error - removed event listener first to stop this
     bills.forEach(bill => {
-      $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
+     $(`#open-bill${bill.id}`).off().on('click', (e) => this.handleEditTicket(e, bill, bills))
     })
-
     return bills
 
   }
