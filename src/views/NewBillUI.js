@@ -1,7 +1,7 @@
 import VerticalLayout from './VerticalLayout.js'
 
 export default () => {
-
+//updated html for file input so only images are accepted
   return (`
     <div class='layout'>
       ${VerticalLayout(120)}
