@@ -19,6 +19,7 @@ const row = (bill) => {
     `)
   }
 
+//updated below to include .sort to allow sorting of dates
 const rows = (data) => {
   return (data && data.length) ? data.sort((d1, d2) => (new Date(d1.date) < new Date(d2.date)) ? 1 : -1).map(bill => row(bill)).join("") : ""
 }
