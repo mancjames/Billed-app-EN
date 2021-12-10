@@ -28,15 +28,8 @@ describe("Given I am connected as an employee", () => {
         bills(){
           return {
             add(bill){
-              return new Promise((resolve, reject)=>{
-                resolve({
-                  onNavigate(pathname){
-                    return document.body.innerHTML = ROUTES({pathname})
-                  }
-                })
-                reject(
-                  console.log(error)
-                )
+              return new Promise((resolve)=>{
+                resolve()
               })
             }
           }
@@ -45,20 +38,14 @@ describe("Given I am connected as an employee", () => {
           ref(filename) {
             return {
               put(file){
-                return new Promise((resolve, reject) => {
+                return new Promise((resolve) => {
                   resolve({
                     ref: {
                       getDownloadURL() {
-                        return url => {
-                          fileUrl = url
-                          fileName = filename
-                        }
+                        return 'url'
                       }
                     }
                   })
-                  reject(
-                    console.log(error)
-                  )
                 })
               }
             }
@@ -129,11 +116,11 @@ describe("Given I am connected as an employee", () => {
           ref(filename) {
             return {
               put(file){
-                return new Promise((resolve, reject) => {
+                return new Promise((resolve) => {
                   resolve({
                     ref: {
                       getDownloadURL() {
-                        return url
+                        return 'url'
                       }
                     }
                   })

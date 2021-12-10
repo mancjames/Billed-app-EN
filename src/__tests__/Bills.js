@@ -27,39 +27,8 @@ describe("Given I am connected as an employee", () => {
         localStorage: window.localStorage,
       })
     })
-  
-  describe("When I navigate to Bill Page", () => {
-    test("fetches bills from mock API GET", async () => {
-        const getSpy = jest.spyOn(firebase, "get")
-        const bills = await firebase.get()
-        expect(getSpy).toHaveBeenCalledTimes(1)
-        expect(bills.data.length).toBe(4)
-    })
-    test("fetches bills from an API and fails with 404 message error", async () => {
-      firebase.get.mockImplementationOnce(() =>
-        Promise.reject(new Error("Erreur 404"))
-      )
-      const html = BillsUI({ error: "Erreur 404" })
-      document.body.innerHTML = html
-      const message = await screen.getByText(/Erreur 404/)
-      expect(message).toBeTruthy()
-    })
-    test("fetches messages from an API and fails with 500 message error", async () => {
-      firebase.get.mockImplementationOnce(() =>
-        Promise.reject(new Error("Erreur 500"))
-      )
-      const html = BillsUI({ error: "Erreur 500" })
-      document.body.innerHTML = html
-      const message = await screen.getByText(/Erreur 500/)
-      expect(message).toBeTruthy()
-    })
-  })
 
   describe("When I am on Bills Page", () => {
-    //check with Tutor
-    test("Then bill icon in vertical layout should be highlighted", () => {
-      // expect(screen.getByTestId("icon-window").classList.contains("active-icon")).toBeTruthy();
-    })
 
     test("if there are no bills, the table should be empty", () => {
       const html = BillsUI({ data: []})
@@ -95,8 +64,6 @@ describe("Given I am connected as an employee", () => {
       expect(clickNewBill).toHaveBeenCalled();
       expect(screen.getAllByText("Send a fee")).toBeTruthy();
       expect(screen.getByTestId("form-new-bill")).toBeTruthy();
-      //check with tutor
-      // expect(screen.getByTestId("icon-mail").classList.contains("active-icon")).toBeTruthy();
     })
   })
 
@@ -110,6 +77,7 @@ describe("Given I am connected as an employee", () => {
 
       expect(modalTrigger).toHaveBeenCalled();
       expect($.fn.modal).toHaveBeenCalledWith("show");
+      expect($.fn.modal).not.toHaveBeenCalledWith('hide')
       
       const modal = document.getElementById('modaleFile')
       expect(modal).toBeTruthy();
@@ -136,5 +104,33 @@ describe("Given I am connected as an employee", () => {
       document.body.innerHTML = html
       expect(screen.getAllByText('Erreur')).toBeTruthy()
     })
+  })
+})
+
+describe("When I navigate to Bill Page", () => {
+  test("fetches bills from mock API GET", async () => {
+      const getSpy = jest.spyOn(firebase, "get")
+      const bills = await firebase.get()
+      expect(getSpy).toHaveBeenCalledTimes(1)
+      expect(bills.data.length).toBe(4)
+      expect(bills.data.length).not.toBe(6)
+  })
+  test("fetches bills from an API and fails with 404 message error", async () => {
+    firebase.get.mockImplementationOnce(() =>
+      Promise.reject(new Error("Erreur 404"))
+    )
+    const html = BillsUI({ error: "Erreur 404" })
+    document.body.innerHTML = html
+    const message = await screen.getByText(/Erreur 404/)
+    expect(message).toBeTruthy()
+  })
+  test("fetches messages from an API and fails with 500 message error", async () => {
+    firebase.get.mockImplementationOnce(() =>
+      Promise.reject(new Error("Erreur 500"))
+    )
+    const html = BillsUI({ error: "Erreur 500" })
+    document.body.innerHTML = html
+    const message = await screen.getByText(/Erreur 500/)
+    expect(message).toBeTruthy()
   })
 })
