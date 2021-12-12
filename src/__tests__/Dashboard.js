@@ -1,185 +1,234 @@
-   
-import { formatDate } from '../app/format.js'
-import DashboardFormUI from '../views/DashboardFormUI.js'
-import BigBilledIcon from '../assets/svg/big_billed.js'
-import { ROUTES_PATH } from '../constants/routes.js'
-import USERS_TEST from '../constants/usersTest.js'
-import Logout from "./Logout.js"
+import { fireEvent, screen } from "@testing-library/dom"
+import userEvent from '@testing-library/user-event'
+import DashboardFormUI from "../views/DashboardFormUI.js"
+import DashboardUI from "../views/DashboardUI.js"
+import Dashboard, { filteredBills, cards } from "../containers/Dashboard.js"
+import { ROUTES } from "../constants/routes"
+import { localStorageMock } from "../__mocks__/localStorage.js"
+import firebase from "../__mocks__/firebase"
+import { bills } from "../fixtures/bills"
 
-export const filteredBills = (data, status) => {
-  return (data && data.length) ?
-    data.filter(bill => {
 
-      let selectCondition
+describe('Given I am connected as an Admin', () => {
+  describe('When I am on Dashboard page, there are bills, and there is one pending', () => {
+    test('Then, filteredBills by pending status should return 1 bill', () => {
+      const filtered_bills = filteredBills(bills, "pending")
+      expect(filtered_bills.length).toBe(1)
+    })
+  })
+  describe('When I am on Dashboard page, there are bills, and there is one accepted', () => {
+    test('Then, filteredBills by accepted status should return 1 bill', () => {
+      const filtered_bills = filteredBills(bills, "accepted")
+      expect(filtered_bills.length).toBe(1)
+    })
+  })
+  describe('When I am on Dashboard page, there are bills, and there is two refused', () => {
+    test('Then, filteredBills by accepted status should return 2 bills', () => {
+      const filtered_bills = filteredBills(bills, "refused")
+      expect(filtered_bills.length).toBe(2)
+    })
+  })
+  describe('When I am on Dashboard page but it is loading', () => {
+    test('Then, Loading page should be rendered', () => {
+      const html = DashboardUI({ loading: true })
+      document.body.innerHTML = html
+      expect(screen.getAllByText('Loading...')).toBeTruthy()
+    })
+  })
+  describe('When I am on Dashboard page but back-end send an error message', () => {
+    test('Then, Error page should be rendered', () => {
+      const html = DashboardUI({ error: 'some error message' })
+      document.body.innerHTML = html
+      expect(screen.getAllByText('Erreur')).toBeTruthy()
+    })
+  })
 
-      // in jest environment
-      if (typeof jest !== 'undefined') {
-        selectCondition = (bill.status === status)
-      } else {
-        // in prod environment
-        const userEmail = JSON.parse(localStorage.getItem("user")).email
-        selectCondition =
-          (bill.status === status) &&
-          [...USERS_TEST, userEmail].includes(bill.email)
+  describe('When I am on Dashboard page and I click on arrow', () => {
+    test('Then, tickets list should be unfolding, and cars should contain first and lastname', async () => {
+      
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname })
       }
 
-      return selectCondition
-    }) : []
-}
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Admin'
+      }))
 
-export const card = (bill) => {
-  const firstAndLastNames = bill.email.split('@')[0]
-  const firstName = firstAndLastNames.includes('.') ?
-    firstAndLastNames.split('.')[0] : ''
-  const lastName = firstAndLastNames.includes('.') ?
-  firstAndLastNames.split('.')[1] : firstAndLastNames
-  return (`
-    <div class='bill-card' id='open-bill${bill.id}' data-testid='open-bill${bill.id}'>
-      <div class='bill-card-name-container'>
-        <div class='bill-card-name'> ${firstName} ${lastName} </div>
-        <span class='bill-card-grey'> ... </span>
-      </div>
-      <div class='name-price-container'>
-        <span> ${bill.name} </span>
-        <span> ${bill.amount} € </span>
-      </div>
-      <div class='date-type-container'>
-        <span> ${formatDate(bill.date)} </span>
-        <span> ${bill.type} </span>
-      </div>
-    </div>
-  `)
-}
+      const dashboard = new Dashboard({
+        document, onNavigate, firestore: null, bills, localStorage: window.localStorage
+      })          
+      const html = DashboardUI({ data: bills })
+   
+      document.body.innerHTML = html
 
-export const cards = (bills) => {
-  return bills && bills.length ? bills.map(bill => card(bill)).join("") : ""
-}
+      const handleShowTickets1 = jest.fn((e) => dashboard.handleShowTickets(e, bills, 1)) 
+      const handleShowTickets2 = jest.fn((e) => dashboard.handleShowTickets(e, bills, 2))    
+      const handleShowTickets3 = jest.fn((e) => dashboard.handleShowTickets(e, bills, 3))    
 
-export const getStatus = (index) => {
-  switch (index) {
-    case 1:
-      return "pending"
-    case 2:
-      return "accepted"
-    case 3:
-      return "refused"
-  }
-}
+      const icon1 = screen.getByTestId('arrow-icon1')
+      const icon2 = screen.getByTestId('arrow-icon2')
+      const icon3 = screen.getByTestId('arrow-icon3')
 
-export default class {
-  constructor({ document, onNavigate, firestore, bills, localStorage }) {
-    this.document = document
-    this.onNavigate = onNavigate
-    this.firestore = firestore
-    $('#arrow-icon1').on('click', (e) => this.handleShowTickets(e, bills, 1))
-    $('#arrow-icon2').on('click', (e) => this.handleShowTickets(e, bills, 2))
-    $('#arrow-icon3').on('click', (e) => this.handleShowTickets(e, bills, 3))
-    this.getBillsAllUsers()
-    new Logout({ localStorage, onNavigate })
-  }
+      icon1.addEventListener('click', handleShowTickets1)
+      userEvent.click(icon1)
+      expect(handleShowTickets1).toHaveBeenCalled()
+      userEvent.click(icon1)
 
-  handleClickIconEye = () => {
-    const billUrl = $('#icon-eye-d').attr("data-bill-url")
-    const imgWidth = Math.floor($('#modaleFileAdmin1').width() * 0.8)
-    $('#modaleFileAdmin1').find(".modal-body").html(`<div style='text-align: center;'><img width=${imgWidth} src=${billUrl} /></div>`)
-    if (typeof $('#modaleFileAdmin1').modal === 'function') $('#modaleFileAdmin1').modal('show')
-  }
+      icon2.addEventListener('click', handleShowTickets2)
+      userEvent.click(icon2)
+      expect(handleShowTickets2).toHaveBeenCalled()
 
-  handleEditTicket(e, bill, bills) {
-    if (this.counter === undefined || this.id !== bill.id) this.counter = 0
-    if (this.id === undefined || this.id !== bill.id) this.id = bill.id
-    if (this.counter % 2 === 0) {
-      bills.forEach(b => {
-        $(`#open-bill${b.id}`).css({ background: '#0D5AE5' })
-      })
-      $(`#open-bill${bill.id}`).css({ background: '#2A2B35' })
-      $('.dashboard-right-container div').html(DashboardFormUI(bill))
-      $('.vertical-navbar').css({ height: '150vh' })
-      this.counter ++
-    } else {
-      $(`#open-bill${bill.id}`).css({ background: '#0D5AE5' })
+      icon3.addEventListener('click', handleShowTickets3)
+      userEvent.click(icon3)
+      expect(handleShowTickets3).toHaveBeenCalled()
 
-      $('.dashboard-right-container div').html(`
-        <div id="big-billed-icon"> ${BigBilledIcon} </div>
-      `)
-      $('.vertical-navbar').css({ height: '120vh' })
-      this.counter ++
-    }
-    $('#icon-eye-d').on('click', () => (this.handleClickIconEye))
-    $('#btn-accept-bill').on('click', (e) => this.handleAcceptSubmit(e, bill))
-    $('#btn-refuse-bill').on('click', (e) => this.handleRefuseSubmit(e, bill))
-  }
-
-  handleAcceptSubmit = (e, bill) => {
-    const newBill = {
-      ...bill,
-      status: 'accepted',
-      commentAdmin: $('#commentary2').val()
-    }
-    this.updateBill(newBill)
-    this.onNavigate(ROUTES_PATH['Dashboard'])
-  }
-
-  handleRefuseSubmit = (e, bill) => {
-    const newBill = {
-      ...bill,
-      status: 'refused',
-      commentAdmin: $('#commentary2').val()
-    }
-    this.updateBill(newBill)
-    this.onNavigate(ROUTES_PATH['Dashboard'])
-  }
-
-  handleShowTickets(e, bills, index) {
-    if (this.counter === undefined || this.index !== index) this.counter = 0
-    if (this.index === undefined || this.index !== index) this.index = index
-    if (this.counter % 2 === 0) {
-      $(`#arrow-icon${this.index}`).css({ transform: 'rotate(0deg)'})
-      $(`#status-bills-container${this.index}`)
-        .html(cards(filteredBills(bills, getStatus(this.index))))
-      this.counter ++
-    } else {
-      $(`#arrow-icon${this.index}`).css({ transform: 'rotate(90deg)'})
-      $(`#status-bills-container${this.index}`)
-        .html("")
-      this.counter ++
-    }
-    //updated below - when opened second arrow was causing event listener to go on twice on already open section causing error - removed event listener first to stop this
-    bills.forEach(bill => {
-     $(`#open-bill${bill.id}`).off().on('click', (e) => this.handleEditTicket(e, bill, bills))
     })
-    return bills
+  })
 
-  }
+  describe('When I am on Dashboard page and I click on edit icon of a card', () => {
+    test('Then, right form should be filled', () => {
+      const html = cards(bills)
+      document.body.innerHTML = html
 
-  // no need to cover this function by tests
-  getBillsAllUsers = () => {
-    if (this.firestore) {
-      return this.firestore
-      .bills()
-      .get()
-      .then(snapshot => {
-        const bills = snapshot.docs
-        .map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          date: doc.data().date,
-          status: doc.data().status
-        }))
-        return bills
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname })
+      }
+      const firestore = null
+
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      const dashboard = new Dashboard({
+        document, onNavigate, firestore, bills, localStorage: window.localStorage
       })
-      .catch(console.log)
-    }
-  }
-    
-  // no need to cover this function by tests
-  updateBill = (bill) => {
-    if (this.firestore) {
-    return this.firestore
-      .bill(bill.id)
-      .update(bill)
-      .then(bill => bill)
-      .catch(console.log)
-    }
-  }
-}
+
+      const handleEditTicket = jest.fn((e) => dashboard.handleEditTicket(e, bills[0], bills))   
+      const iconEdit = screen.getByTestId('open-bill47qAXb6fIm2zOKkLzMro')
+      iconEdit.addEventListener('click', handleEditTicket)
+      userEvent.click(iconEdit)
+      expect(handleEditTicket).toHaveBeenCalled()
+      userEvent.click(iconEdit)
+      expect(handleEditTicket).toHaveBeenCalled()
+    })
+  })
+
+  describe('When I am on Dashboard and there are no bills', () => {
+    test('Then, no cards should be shown', () => {
+      const html = cards([])
+      document.body.innerHTML = html
+
+      const iconEdit = screen.queryByTestId('open-bill47qAXb6fIm2zOKkLzMro')
+      expect(iconEdit).toBeNull()
+    })
+  })
+})
+
+describe('Given I am connected as Admin, and I am on Dashboard page, and I clicked on a pending bill', () => {
+  describe('When I click on accept button', () => {
+    test('I should be sent on Dashboard with big billed icon instead of form', () => {
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Admin'
+      }))
+      const html = DashboardFormUI(bills[0])
+      document.body.innerHTML = html
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname })
+      }
+      const firestore = null
+      const dashboard = new Dashboard({
+        document, onNavigate, firestore, bills, localStorage: window.localStorage
+      })
+
+      const acceptButton = screen.getByTestId("btn-accept-bill-d")
+      const handleAcceptSubmit = jest.fn((e) => dashboard.handleAcceptSubmit(e, bills[0]))
+      acceptButton.addEventListener("click", handleAcceptSubmit)
+      fireEvent.click(acceptButton)
+      expect(handleAcceptSubmit).toHaveBeenCalled()
+      const bigBilledIcon = screen.queryByTestId("big-billed-icon")
+      expect(bigBilledIcon).toBeTruthy()
+    })
+  })
+  describe('When I click on refuse button', () => {
+    test('I should be sent on Dashboard with big billed icon instead of form', () => {
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Admin'
+      }))
+      const html = DashboardFormUI(bills[0])
+      document.body.innerHTML = html
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname })
+      }
+      const firestore = null
+      const dashboard = new Dashboard({
+        document, onNavigate, firestore, bills, localStorage: window.localStorage
+      })
+      const refuseButton = screen.getByTestId("btn-refuse-bill-d")
+      const handleRefuseSubmit = jest.fn((e) => dashboard.handleRefuseSubmit(e, bills[0]))
+      refuseButton.addEventListener("click", handleRefuseSubmit)
+      fireEvent.click(refuseButton)
+      expect(handleRefuseSubmit).toHaveBeenCalled()
+      const bigBilledIcon = screen.queryByTestId("big-billed-icon")
+      expect(bigBilledIcon).toBeTruthy()
+    })
+  })
+})
+
+describe('Given I am connected as Admin and I am on Dashboard page and I clicked on a bill', () => {
+  describe('When I click on the icon eye', () => {
+    test('A modal should open', () => {
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Admin'
+      }))
+      const html = DashboardFormUI(bills[0])
+      document.body.innerHTML = html
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname })
+      }
+      const firestore = null
+      const dashboard = new Dashboard({
+        document, onNavigate, firestore, bills, localStorage: window.localStorage
+      })
+
+      const handleClickIconEye = jest.fn(dashboard.handleClickIconEye)
+      const eye = screen.getByTestId('icon-eye-d')
+      eye.addEventListener('click', handleClickIconEye)
+      userEvent.click(eye)
+      expect(handleClickIconEye).toHaveBeenCalled()
+
+      const modale = screen.getByTestId('modaleFileAdmin')
+      expect(modale).toBeTruthy()
+    })
+  })
+})
+
+// test d'intégration GET
+describe("Given I am a user connected as Admin", () => {
+  describe("When I navigate to Dashboard", () => {
+    test("fetches bills from mock API GET", async () => {
+       const getSpy = jest.spyOn(firebase, "get")
+       const bills = await firebase.get()
+       expect(getSpy).toHaveBeenCalledTimes(1)
+       expect(bills.data.length).toBe(4)
+    })
+    test("fetches bills from an API and fails with 404 message error", async () => {
+      firebase.get.mockImplementationOnce(() =>
+        Promise.reject(new Error("Erreur 404"))
+      )
+      const html = DashboardUI({ error: "Erreur 404" })
+      document.body.innerHTML = html
+      const message = await screen.getByText(/Erreur 404/)
+      expect(message).toBeTruthy()
+    })
+    test("fetches messages from an API and fails with 500 message error", async () => {
+      firebase.get.mockImplementationOnce(() =>
+        Promise.reject(new Error("Erreur 500"))
+      )
+      const html = DashboardUI({ error: "Erreur 500" })
+      document.body.innerHTML = html
+      const message = await screen.getByText(/Erreur 500/)
+      expect(message).toBeTruthy()
+    })
+  })
+})
