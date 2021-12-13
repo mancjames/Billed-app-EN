@@ -1,10 +1,12 @@
 import { fireEvent, screen } from "@testing-library/dom"
+import { matchers } from "@testing-library/jest-dom"
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
 import { localStorageMock } from "../__mocks__/localStorage"
 import { ROUTES } from "../constants/routes"
 import firebase from  '../__mocks__/firebase'
 import userEvent from '@testing-library/user-event'
+import firestore from '../__mocks__/firestore'
 
 
 describe("Given I am connected as an employee", () => {
@@ -24,41 +26,14 @@ describe("Given I am connected as an employee", () => {
   
   describe("When I am on a Newbill Page and I submit the form correctly", () => {
     test("Then I should submit a valid bill", () => {
-      let firestore = {
-        bills(){
-          return {
-            add(bill){
-              return new Promise((resolve)=>{
-                resolve()
-              })
-            }
-          }
-        },
-        storage: {
-          ref(filename) {
-            return {
-              put(file){
-                return new Promise((resolve) => {
-                  resolve({
-                    ref: {
-                      getDownloadURL() {
-                        return 'url'
-                      }
-                    }
-                  })
-                })
-              }
-            }
-          }
-        },
-      }
       newBill = new NewBill({
         document,
         onNavigate,
         firestore,
         localStorage: window.localStorage,
       })
-
+      const jsdomAlert = window.alert;
+      window.alert = () => {};
       const expenseType = screen.getByTestId('expense-type')
       userEvent.selectOptions(expenseType, [ screen.getByText('Travels') ])
 
@@ -78,12 +53,12 @@ describe("Given I am connected as an employee", () => {
 
       const handleSubmit = jest.fn(newBill.handleSubmit);
       newBill.fileName = "test.jpg";
-
       const newBillForm = screen.getByTestId("form-new-bill");
       newBillForm.addEventListener("submit", handleSubmit);
       fireEvent.submit(newBillForm)
-
       expect(handleSubmit).toHaveBeenCalledTimes(1);
+
+      window.alert = jsdomAlert;
     })
 
     test("Then I should be redirected to Bills Page", () => {
@@ -93,7 +68,8 @@ describe("Given I am connected as an employee", () => {
         firestore: null,
         localStorage: window.localStorage,
       })
-
+      const jsdomAlert = window.alert;
+      window.alert = () => {};
       const handleSubmit = jest.fn(newBill.handleSubmit);
       newBill.fileName = "test.jpg";
 
@@ -103,39 +79,20 @@ describe("Given I am connected as an employee", () => {
 
       expect(handleSubmit).toHaveBeenCalled();
       expect(screen.getAllByText("My fees")).toBeTruthy();
+      window.alert = jsdomAlert;
     })
   })
 
   describe("When I am on a Newbill Page and I choose an unsupported file", () => {
     test("It won't allow the file to upload", () => {
-      let firestore = {
-        get(){
-  
-        },
-        storage: {
-          ref(filename) {
-            return {
-              put(file){
-                return new Promise((resolve) => {
-                  resolve({
-                    ref: {
-                      getDownloadURL() {
-                        return 'url'
-                      }
-                    }
-                  })
-                })
-              }
-            }
-          }
-        },
-      }
       newBill = new NewBill({
         document,
         onNavigate,
         firestore,
         localStorage: window.localStorage,
       })
+      const jsdomAlert = window.alert;
+      window.alert = () => {};
       const file = screen.getByTestId('file')
       const handleChangeFile = jest.fn(newBill.handleChangeFile)
       file.addEventListener('change', handleChangeFile)
@@ -146,7 +103,10 @@ describe("Given I am connected as an employee", () => {
           })],
         }
       })
-      expect(handleChangeFile).toHaveBeenCalled()
+      const sendButton = screen.getByTestId('send-button')
+      expect(handleChangeFile).toHaveBeenCalled();
+      expect(sendButton).toBeDisabled();
+      window.alert = jsdomAlert;
     })
     
   })
