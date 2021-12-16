@@ -19,6 +19,7 @@ export default class NewBill {
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
+    // if statement below to ensure file submitted is JPG, JPEG or PNG
     if (fileName.split('.').pop().toUpperCase() == ('JPG' || 'JPEG' || 'PNG') && file.type.includes('image')) {
       document.getElementById("btn-send-bill").disabled = false;
       this.firestore
@@ -32,7 +33,7 @@ export default class NewBill {
       })
     } else {
       document.getElementById("btn-send-bill").disabled = true;
-      alert ('Please select the file type .jpg, .jpeg, .png')
+      alert ('Please select the file type .jpg, .jpeg or .png')
     }
   }
   handleSubmit = e => {
