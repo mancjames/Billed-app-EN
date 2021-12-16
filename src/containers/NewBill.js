@@ -20,7 +20,7 @@ export default class NewBill {
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
     // if statement below to ensure file submitted is JPG, JPEG or PNG
-    if (fileName.split('.').pop().toUpperCase() == ('JPG' || 'JPEG' || 'PNG') && file.type.includes('image')) {
+    if (file.type == 'image/jpeg' || file.type == 'image/png' || file.type == 'image/jpg') {
       document.getElementById("btn-send-bill").disabled = false;
       this.firestore
       .storage
