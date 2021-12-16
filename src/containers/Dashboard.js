@@ -104,7 +104,7 @@ export default class {
       $('.vertical-navbar').css({ height: '120vh' })
       this.counter ++
     }
-    $('#icon-eye-d').on('click', () => (this.handleClickIconEye))
+    $('#icon-eye-d').click(this.handleClickIconEye)
     $('#btn-accept-bill').on('click', (e) => this.handleAcceptSubmit(e, bill))
     $('#btn-refuse-bill').on('click', (e) => this.handleRefuseSubmit(e, bill))
   }
